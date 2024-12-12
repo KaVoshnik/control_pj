@@ -52,11 +52,9 @@ class TaskManagerApp(ctk.CTk):
         self.title("Task Manager")
         self.geometry("600x400")
         
-        # Установка темной темы
-        ctk.set_appearance_mode("dark")  # Устанавливаем темный режим
-        ctk.set_default_color_theme("dark-blue")  # Устанавливаем цветовую тему
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("dark-blue")
 
-        # Установка шрифта JetBrains Mono
         ctk.CTkFont(family="JetBrains Mono", size=12)
 
         self.task_textbox = ctk.CTkTextbox(self, fg_color="#2E2E2E", text_color="white", font=("JetBrains Mono", 12))
