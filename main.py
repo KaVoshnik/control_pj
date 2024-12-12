@@ -34,13 +34,13 @@ root = ctk.CTk()
 root.geometry("600x400")
 root.title("Dotabuff Data Fetcher")
 
-account_id_label = ctk.CTkLabel(master=root, text="Введите ID игрока Dotabuff:")
+account_id_label = ctk.CTkLabel(master=root, text="Enter Dotabuff player Id:")
 account_id_label.pack(pady=10, padx=10)
 
 account_id_entry = ctk.CTkEntry(master=root)
 account_id_entry.pack(pady=10, padx=10)
 
-fetch_button = ctk.CTkButton(master=root, text="Получить данные", command=fetch_data)
+fetch_button = ctk.CTkButton(master=root, text="Take data", command=fetch_data)
 fetch_button.pack(pady=10, padx=10)
 
 result_label = ctk.CTkLabel(master=root, text="")

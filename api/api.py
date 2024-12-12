@@ -15,21 +15,21 @@ def get_dotabuff_data(account_id):
         soup = BeautifulSoup(response.content, 'html.parser')
 
         try:
-            last_match_time_element = soup.select_one('.match-details__date') # пример селектора, возможно потребуется изменение
+            last_match_time_element = soup.select_one('.match-details__date')
             last_match_time = last_match_time_element.text.strip() if last_match_time_element else "N/A"
         except AttributeError:
             last_match_time = "N/A"
 
 
         try:
-            winrate_element = soup.select_one('.player-stats__winrate') # пример селектора, возможно потребуется изменение
+            winrate_element = soup.select_one('.player-stats__winrate')
             winrate = winrate_element.text.strip() if winrate_element else "N/A"
         except AttributeError:
             winrate = "N/A"
 
 
         recent_matches = []
-        match_rows = soup.select('.match-list-row')[:5] # пример селектора, возможно потребуется изменение
+        match_rows = soup.select('.match-list-row')[:5]
         for row in match_rows:
             try:
                 hero_name = row.select_one('.match-hero').text.strip() if row.select_one('.match-hero') else "N/A"
@@ -54,9 +54,9 @@ def get_dotabuff_data(account_id):
             'recent_matches': recent_matches,
         }
     except requests.exceptions.RequestException as e:
-        return {'error': f"Ошибка при запросе: {e}"}
+        return {'error': f"Get error: {e}"}
     except Exception as e:
-        return {'error': f"Произошла ошибка: {e}"}
+        return {'error': f"Error: {e}"}
 
 @app.route('/api/<account_id>')
 def get_data(account_id):
