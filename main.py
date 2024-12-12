@@ -2,7 +2,7 @@ import requests
 import customtkinter as ctk
 import json
 
-ctk.set_appearance_mode("System")
+ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 def fetch_data():
@@ -13,21 +13,21 @@ def fetch_data():
         data = response.json()
 
         if 'error' in data:
-            result_label.configure(text=f"Ошибка: {data['error']}")
+            result_label.configure(text=f"Error: {data['error']}")
             winrate_label.configure(text="")
             matches_textbox.delete("1.0", ctk.END)
         else:
-            result_label.configure(text=f"Последний матч: {data['last_match_time']}")
+            result_label.configure(text=f"Last match: {data['last_match_time']}")
             winrate_label.configure(text=f"Winrate: {data['winrate']}")
             matches_textbox.delete("1.0", ctk.END)
             for match in data['recent_matches']:
-                matches_textbox.insert(ctk.END, f"Герой: {match['hero']}, Результат: {match['result']}, Режим: {match['game_mode']}, Длительность: {match['duration']}, KDA: {match['kda']}\n")
+                matches_textbox.insert(ctk.END, f"Hero: {match['hero']}, Result: {match['result']}, Mode: {match['game_mode']}, Duration: {match['duration']}, K/D/A: {match['kda']}\n")
     except requests.exceptions.RequestException as e:
-        result_label.configure(text=f"Ошибка сети: {e}")
+        result_label.configure(text=f"Network error: {e}")
     except json.JSONDecodeError:
-        result_label.configure(text="Ошибка обработки JSON")
+        result_label.configure(text="Processing error JSON")
     except Exception as e:
-        result_label.configure(text=f"Произошла неизвестная ошибка: {e}")
+        result_label.configure(text=f"An unknown error has occurred: {e}")
 
 
 root = ctk.CTk()
@@ -48,8 +48,5 @@ result_label.pack(pady=5, padx=10)
 
 winrate_label = ctk.CTkLabel(master=root, text="")
 winrate_label.pack(pady=5, padx=10)
-
-matches_textbox = ctk.CTkTextbox(master=root, width=400)
-matches_textbox.pack(pady=10, padx=10)
 
 root.mainloop()
