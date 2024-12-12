@@ -6,6 +6,7 @@ import time
 app = Flask(__name__)
 
 def get_dotabuff_data(account_id):
+    
     url = f"https://www.dotabuff.com/players/{account_id}"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
     try:
@@ -13,33 +14,29 @@ def get_dotabuff_data(account_id):
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        #  Извлечение даты и времени последнего матча (нужно настроить селекторы под реальную структуру сайта)
         try:
-            last_match_time_element = soup.select_one('.data-time-ago')  # ЗАМЕНИТЕ селектор
-            last_match_time = last_match_time_element.text.strip() if last_match_time_element else None
-            print(last_match_time)
+            last_match_time_element = soup.select_one('.match-details__date') # пример селектора, возможно потребуется изменение
+            last_match_time = last_match_time_element.text.strip() if last_match_time_element else "N/A"
         except AttributeError:
-            last_match_time = None
+            last_match_time = "N/A"
 
 
-        # Извлечение доли побед (нужно настроить селекторы под реальную структуру сайта)
         try:
-            winrate_element = soup.select_one('.winrate') #ЗАМЕНИТЕ селектор
-            winrate = winrate_element.text.strip() if winrate_element else None
+            winrate_element = soup.select_one('.player-stats__winrate') # пример селектора, возможно потребуется изменение
+            winrate = winrate_element.text.strip() if winrate_element else "N/A"
         except AttributeError:
-            winrate = None
+            winrate = "N/A"
 
 
-        # Извлечение истории последних 5 матчей (нужно настроить селекторы под реальную структуру сайта)
         recent_matches = []
-        match_rows = soup.select('.match-list-row')[:5] #ЗАМЕНИТЕ селектор, ограничение на 5 последних матчей
+        match_rows = soup.select('.match-list-row')[:5] # пример селектора, возможно потребуется изменение
         for row in match_rows:
             try:
-                hero_name = row.select_one('.hero-name').text.strip() #ЗАМЕНИТЕ селектор
-                match_result = row.select_one('.match-result').text.strip() #ЗАМЕНИТЕ селектор
-                game_mode = row.select_one('.game-mode').text.strip() #ЗАМЕНИТЕ селектор
-                match_duration = row.select_one('.match-duration').text.strip() #ЗАМЕНИТЕ селектор
-                kda = row.select_one('.kda').text.strip() #ЗАМЕНИТЕ селектор
+                hero_name = row.select_one('.match-hero').text.strip() if row.select_one('.match-hero') else "N/A"
+                match_result = row.select_one('.match-result').text.strip() if row.select_one('.match-result') else "N/A"
+                game_mode = row.select_one('.match-game-mode').text.strip() if row.select_one('.match-game-mode') else "N/A"
+                match_duration = row.select_one('.match-duration').text.strip() if row.select_one('.match-duration') else "N/A"
+                kda = row.select_one('.match-kda').text.strip() if row.select_one('.match-kda') else "N/A"
                 recent_matches.append({
                     'hero': hero_name,
                     'result': match_result,
