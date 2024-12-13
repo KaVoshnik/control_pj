@@ -13,10 +13,11 @@ conn = psycopg2.connect(
 cursor = conn.cursor()
 
 # Global Vars
-font_size = 12
-current_note_id = None
-theme = "dark"
-config_path = 'cfg/cfg.json'
+font_size = 12 # Font size
+current_note_id = None # Note Id for use in code
+theme = "dark" # Default theme
+config_path = 'cfg/cfg.json' # Cfg folder path
+sort_order = "id_asc"  # Id sort
 
 
 def load_settings():
@@ -27,20 +28,24 @@ def load_settings():
             font_size = config.get('font_size', 12)
             theme = config.get('theme', 'dark')
 
+
 def save_settings():
     config = {'font_size': font_size, 'theme': theme}
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
     with open(config_path, 'w') as config_file:
         json.dump(config, config_file)
 
+
 def apply_theme():
     ctk.set_appearance_mode(theme)
+
 
 def create_note():
     save_current_note()
     note_entry.delete("1.0", ctk.END)
     global current_note_id
     current_note_id = None
+
 
 def save_current_note():
     global current_note_id
@@ -53,36 +58,46 @@ def save_current_note():
             cursor.execute("UPDATE notes SET content = %s WHERE id = %s", (note_content, current_note_id))
             conn.commit()
 
+
 def save_note():
     save_current_note()
     load_notes()
     note_entry.delete("1.0", ctk.END)
 
+
 def load_notes():
-    cursor.execute("SELECT * FROM notes")
+    global sort_order
+    if sort_order == "id_asc":
+        cursor.execute("SELECT * FROM notes ORDER BY id ASC")
+    elif sort_order == "id_desc":
+        cursor.execute("SELECT * FROM notes ORDER BY id DESC")
+
     notes = cursor.fetchall()
     notes_list.delete(0, tk.END)
     for note in notes:
-        notes_list.insert(tk.END, note[1])
+        notes_list.insert(tk.END, (note[0], note[1]))
+
 
 def open_note(event):
     save_current_note()
     global current_note_id
     selected_index = notes_list.curselection()
     if selected_index:
-        note_content = notes_list.get(selected_index)
+        note_id, note_content = notes_list.get(selected_index)
         note_entry.delete("1.0", ctk.END)
         note_entry.insert("1.0", note_content)
-        current_note_id = selected_index[0] + 1
+        current_note_id = note_id
+
 
 def delete_note():
     selected_index = notes_list.curselection()
     if selected_index:
-        note_content = notes_list.get(selected_index)
-        cursor.execute("DELETE FROM notes WHERE content = %s", (note_content,))
+        note_id, note_content = notes_list.get(selected_index)
+        cursor.execute("DELETE FROM notes WHERE id = %s", (note_id,))
         conn.commit()
         load_notes()
         note_entry.delete("1.0", ctk.END)
+
 
 def open_settings():
     settings_window = ctk.CTkToplevel(app)
@@ -108,11 +123,13 @@ def open_settings():
     apply_button = ctk.CTkButton(settings_window, text="Apply", command=lambda: apply_settings(font_size_entry.get()))
     apply_button.pack(pady=10)
 
+
 def set_theme(selected_theme):
     global theme
     theme = selected_theme
     apply_theme()
     save_settings()
+
 
 def apply_settings(new_size):
     global font_size
@@ -124,6 +141,13 @@ def apply_settings(new_size):
     except ValueError:
         pass
 
+
+def change_sort_order(new_order):
+    global sort_order
+    sort_order = new_order
+    load_notes()
+
+
 app = ctk.CTk()
 app.title("Notes App")
 load_settings()
@@ -131,6 +155,11 @@ apply_theme()
 
 menu_frame = ctk.CTkFrame(app)
 menu_frame.pack(side=ctk.LEFT, fill=ctk.Y)
+
+sort_menu = ctk.CTkOptionMenu(menu_frame, 
+                                values=["Sort by ID (Ascending)", "Sort by ID (Descending)"],
+                                command=lambda value: change_sort_order(value.split()[2].lower() + ("_asc" if "Ascending" in value else "_desc")))
+sort_menu.pack(padx=10, pady=10)
 
 notes_list = tk.Listbox(menu_frame, height=20, font=("JetBrains Mono", font_size))
 notes_list.pack(padx=10, pady=10)
