@@ -16,7 +16,7 @@ cursor = conn.cursor()
 font_size = 12 # Font size
 current_note_id = None # Note Id for use in code
 theme = "dark" # Default theme
-config_path = 'cfg/cfg.json' # Cfg folder path
+config_path = 'config/cfg.json' # Cfg folder path
 sort_order = "id_asc"  # Id sort
 
 
