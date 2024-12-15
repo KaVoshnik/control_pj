@@ -51,18 +51,21 @@ def save_current_note():
     global current_note_id
     note_content = note_entry.get("1.0", ctk.END).strip()
     if note_content:
-        if current_note_id is None:
-            cursor.execute("INSERT INTO notes (content) VALUES (%s)", (note_content,))
-            conn.commit()
-        else:
-            cursor.execute("UPDATE notes SET content = %s WHERE id = %s", (note_content, current_note_id))
-            conn.commit()
-
+        try:
+            if current_note_id is None:
+                cursor.execute("INSERT INTO notes (content) VALUES (%s)", (note_content,))
+                conn.commit()
+            else:
+                cursor.execute("UPDATE notes SET content = %s WHERE id = %s", (note_content, current_note_id))
+                conn.commit()
+        except Exception as e:
+            print(f"Error saving note: {e}")
 
 def save_note():
     save_current_note()
     load_notes()
     note_entry.delete("1.0", ctk.END)
+
 
 
 def load_notes():
