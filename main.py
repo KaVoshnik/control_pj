@@ -23,7 +23,6 @@ def create_notes_table():
     """)
     conn.commit()
 
-# Call the function to create the table
 create_notes_table()
 
 # Global Vars
@@ -163,27 +162,22 @@ def change_sort_order(new_order):
     sort_order = new_order
     load_notes()
 
-# Initialize the application
 app = ctk.CTk()
 app.title("Notes App")
 load_settings()
 apply_theme()
 
-# Create the menu frame
 menu_frame = ctk.CTkFrame(app)
 menu_frame.pack(side=ctk.LEFT, fill=ctk.Y)
 
-# Create the sort menu
 sort_menu = ctk.CTkOptionMenu(menu_frame, 
                                 values=["Sort by ID (Ascending)", "Sort by ID (Descending)"],
                                 command=lambda value: change_sort_order(value.split()[2].lower() + ("_asc" if "Ascending" in value else "_desc")))
 sort_menu.pack(padx=10, pady=10)
 
-# Create the notes listbox
 notes_list = tk.Listbox(menu_frame, height=20, font=("JetBrains Mono", font_size))
 notes_list.pack(padx=10, pady=10)
 
-# Create buttons for note actions
 create_button = ctk.CTkButton(menu_frame, text="Create note", command=create_note)
 create_button.pack(pady=5)
 
@@ -196,18 +190,13 @@ delete_button.pack(pady=5)
 settings_button = ctk.CTkButton(menu_frame, text="Settings", command=open_settings)
 settings_button.pack(pady=5)
 
-# Create the note entry textbox
 note_entry = ctk.CTkTextbox(app, width=400, height=300, font=("JetBrains Mono", font_size))
 note_entry.pack(side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=20, pady=20)
 
-# Bind the listbox selection event
 notes_list.bind('<<ListboxSelect>>', open_note)
 
-# Load existing notes
 load_notes()
 
-# Start the application
 app.mainloop()
 
-# Close the database connection
 conn.close()
